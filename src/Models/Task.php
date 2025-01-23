@@ -8,18 +8,58 @@ class Task extends Model
 {
     public function getAllTasks(): array
     {
-        $query = $this->pdo->query("SELECT * FROM tasks WHERE deleted = 0");
-        return $query->fetchAll();
+        $stmt = $this->pdo->query("
+            SELECT t.id, t.title, t.description, t.observation, 
+                   p.name AS priority, c.name AS category
+            FROM tasks t
+            LEFT JOIN priorities p ON t.priority_id = p.id
+            LEFT JOIN categories c ON t.category_id = c.id
+            WHERE t.deleted = 0
+        ");
+        return $stmt->fetchAll();
+    }
+
+    public function getTaskById(int $id): array
+    {
+        $stmt = $this->pdo->prepare("
+            SELECT t.id, t.title, t.description, t.observation, 
+                   p.name AS priority, c.name AS category
+            FROM tasks t
+            LEFT JOIN priorities p ON t.priority_id = p.id
+            LEFT JOIN categories c ON t.category_id = c.id
+            WHERE t.id = :id
+        ");
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetch();
     }
 
     public function createTask(array $data): bool
     {
-        $stmt = $this->pdo->prepare("INSERT INTO tasks (title, description, user_id, category_id, priority_id, created_by) 
-                                    VALUES (:title, :description, :user_id, :category_id, :priority_id, :created_by)");
+        $stmt = $this->pdo->prepare("
+            INSERT INTO tasks (title, description, observation, priority_id, category_id, user_id, created_by) 
+            VALUES (:title, :description, :observation, :priority_id, :category_id, :user_id, :created_by)
+        ");
         return $stmt->execute($data);
     }
 
-    public function getAssignedTasks($userId)
+    public function updateTask(array $data): bool
+    {
+        $stmt = $this->pdo->prepare("
+            UPDATE tasks
+            SET title = :title, description = :description, observation = :observation,
+                priority_id = :priority_id, category_id = :category_id, edited_by = :edited_by
+            WHERE id = :id
+        ");
+        return $stmt->execute($data);
+    }
+
+    public function deleteTask(int $id): bool
+    {
+        $stmt = $this->pdo->prepare("UPDATE tasks SET deleted = 1 WHERE id = :id");
+        return $stmt->execute(['id' => $id]);
+    }
+
+    public function getAssignedTasks($userId): array
     {
         $query = $this->pdo->prepare("
             SELECT t.id, t.title, p.name AS priority

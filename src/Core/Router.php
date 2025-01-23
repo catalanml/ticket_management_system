@@ -6,61 +6,63 @@ use App\Controllers\AuthController;
 use App\Controllers\DashboardController;
 use App\Controllers\CategoryController;
 use App\Controllers\PriorityController;
+use App\Controllers\TaskController;
 
 class Router
 {
+    private array $routes = [];
+
+    public function __construct()
+    {
+        $this->routes = [
+            // Auth Routes
+            ['method' => 'GET', 'path' => '/', 'controller' => [AuthController::class, 'loginForm']],
+            ['method' => 'GET', 'path' => '/login', 'controller' => [AuthController::class, 'loginForm']],
+            ['method' => 'POST', 'path' => '/login', 'controller' => [AuthController::class, 'login']],
+            ['method' => 'GET', 'path' => '/register', 'controller' => [AuthController::class, 'registerForm']],
+            ['method' => 'POST', 'path' => '/register', 'controller' => [AuthController::class, 'register']],
+            ['method' => 'GET', 'path' => '/logout', 'controller' => [AuthController::class, 'logout']],
+
+            // Dashboard Route
+            ['method' => 'GET', 'path' => '/dashboard', 'controller' => [DashboardController::class, 'show']],
+
+            // Category Routes
+            ['method' => 'GET', 'path' => '/categories', 'controller' => [CategoryController::class, 'index']],
+            ['method' => 'POST', 'path' => '/categories/create', 'controller' => [CategoryController::class, 'create']],
+            ['method' => 'POST', 'path' => '/categories/edit', 'controller' => [CategoryController::class, 'edit']],
+            ['method' => 'POST', 'path' => '/categories/delete', 'controller' => [CategoryController::class, 'delete']],
+
+            // Priority Routes
+            ['method' => 'GET', 'path' => '/priorities', 'controller' => [PriorityController::class, 'index']],
+            ['method' => 'POST', 'path' => '/priorities/create', 'controller' => [PriorityController::class, 'create']],
+            ['method' => 'POST', 'path' => '/priorities/edit', 'controller' => [PriorityController::class, 'edit']],
+            ['method' => 'POST', 'path' => '/priorities/delete', 'controller' => [PriorityController::class, 'delete']],
+
+            // Task Routes
+            ['method' => 'GET', 'path' => '/tasks', 'controller' => [TaskController::class, 'index']],
+            ['method' => 'GET', 'path' => '/tasks/createForm', 'controller' => [TaskController::class, 'showForm']],
+            ['method' => 'POST', 'path' => '/tasks/create', 'controller' => [TaskController::class, 'create']],
+            ['method' => 'POST', 'path' => '/tasks/edit', 'controller' => [TaskController::class, 'edit']],
+            ['method' => 'POST', 'path' => '/tasks/delete', 'controller' => [TaskController::class, 'delete']],
+        ];
+    }
+
     public function handleRequest()
     {
         $path = $_SERVER['REQUEST_URI'];
+        $method = $_SERVER['REQUEST_METHOD'];
 
-        if ($path === '/register' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-            $controller = new AuthController();
-            $controller->register();
-        } elseif ($path === '/login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-            $controller = new AuthController();
-            $controller->login();
-        } elseif ($path === '/logout') {
-            $controller = new AuthController();
-            $controller->logout();
+        foreach ($this->routes as $route) {
+            if ($route['path'] === $path && $route['method'] === $method) {
+                [$controllerClass, $method] = $route['controller'];
+                $controller = new $controllerClass();
+                $controller->$method();
+                return;
+            }
         }
 
-        if ($path === '/' || $path === '/login') {
-            $controller = new AuthController();
-            $controller->loginForm();
-        } elseif ($path === '/register') {
-            $controller = new AuthController();
-            $controller->registerForm();
-        } elseif ($path === '/dashboard') {
-            $controller = new DashboardController();
-            $controller->show();
-        } elseif ($path === '/categories') {
-            $controller = new CategoryController();
-            $controller->index();
-        } elseif ($path === '/categories/create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-            $controller = new CategoryController();
-            $controller->create();
-        } elseif ($path === '/categories/edit' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-            $controller = new CategoryController();
-            $controller->edit();
-        } elseif ($path === '/categories/delete' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-            $controller = new CategoryController();
-            $controller->delete();
-        } elseif ($path === '/priorities') {
-            $controller = new PriorityController();
-            $controller->index();
-        } elseif ($path === '/priorities/create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-            $controller = new PriorityController();
-            $controller->create();
-        } elseif ($path === '/priorities/edit' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-            $controller = new PriorityController();
-            $controller->edit();
-        } elseif ($path === '/priorities/delete' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-            $controller = new PriorityController();
-            $controller->delete();
-        }
-
-
-
+        // Si no se encuentra la ruta
+        http_response_code(404);
+        echo "404 - Not Found";
     }
-
 }

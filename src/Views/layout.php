@@ -13,11 +13,31 @@
     <nav class="sidebar bg-dark text-white p-4" style="width: 250px; min-height: 100vh;">
         <h4 class="mb-4">Task Management</h4>
         <ul class="nav flex-column">
-            <li class="nav-item"><a class="nav-link text-white" href="/dashboard">Tareas asignadas</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="/tasks/create">Crear tarea</a></li>
+            <!-- Agrupación de "Tareas" -->
+            <li class="nav-item">
+                <div class="accordion" id="taskAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingTasks">
+                            <button class="accordion-button collapsed bg-dark text-white border-0" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTasks" aria-expanded="false" aria-controls="collapseTasks">
+                                Tareas
+                            </button>
+                        </h2>
+                        <div id="collapseTasks" class="accordion-collapse collapse" aria-labelledby="headingTasks" data-bs-parent="#taskAccordion">
+                            <div class="accordion-body bg-dark p-0">
+                                <ul class="nav flex-column">
+                                    <li class="nav-item"><a class="nav-link text-white" href="/tasks/createForm">Crear tarea</a></li>
+                                    <li class="nav-item"><a class="nav-link text-white" href="/dashboard">Mis tareas asignadas</a></li>
+                                    <li class="nav-item"><a class="nav-link text-white" href="/tasks/assign">Asignar tareas</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+
+            <!-- Otros elementos -->
             <li class="nav-item"><a class="nav-link text-white" href="/categories">Administrar categorias</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="/priorities">Administrar prioridades</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="/tasks/assign">Asignar tareas</a></li>
             <li class="nav-item"><a class="nav-link text-danger" href="/logout">Cerrar sesión</a></li>
         </ul>
     </nav>
@@ -28,7 +48,5 @@
     </div>
 </div>
 <script src="/assets/bootstrap-5.3.0-dist/js/bootstrap.bundle.min.js"></script>
-
-
 </body>
 </html>
