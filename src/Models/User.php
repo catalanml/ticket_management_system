@@ -19,4 +19,12 @@ class User extends Model
         $stmt = $this->pdo->prepare("INSERT INTO users (firstname, lastname, email , password) VALUES (:firstname, :lastname, :email, :password)");
         return $stmt->execute($data);
     }
+
+    public function getUserById($userId)
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE id = :id");
+        $stmt->execute(['id' => $userId]);
+        return $stmt->fetch();
+    }
+
 }

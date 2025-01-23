@@ -21,22 +21,22 @@ ob_start();
                 <form id="taskForm" class="mb-4">
                     <div class="mb-3">
                         <label for="taskTitle" class="form-label">Título de la tarea</label>
-                        <input type="text" id="taskTitle" class="form-control" placeholder="Título de la tarea" required>
+                        <input type="text" name="task_title" id="taskTitle" class="form-control" placeholder="Título de la tarea" required>
                     </div>
 
                     <div class="mb-3">
                         <label for="taskDescription" class="form-label">Descripción</label>
-                        <textarea id="taskDescription" class="form-control" placeholder="Descripción de la tarea" rows="4" required></textarea>
+                        <textarea id="taskDescription" name="description"  class="form-control" placeholder="Descripción de la tarea" rows="4" required></textarea>
                     </div>
 
                     <div class="mb-3">
                         <label for="taskObservation" class="form-label">Observaciones (Opcional)</label>
-                        <textarea id="taskObservation" class="form-control" placeholder="Observaciones adicionales" rows="3"></textarea>
+                        <textarea id="taskObservation" name="observation" class="form-control" placeholder="Observaciones adicionales" rows="3"></textarea>
                     </div>
 
                     <div class="mb-3">
                         <label for="taskPriority" class="form-label">Prioridad</label>
-                        <select id="taskPriority" class="form-select" required>
+                        <select name="priority_id"  id="taskPriority" class="form-select" required>
                             <option value="">Selecciona una prioridad</option>
                             <?php foreach ($priorities as $priority): ?>
                                 <option value="<?= $priority['id']; ?>"><?= htmlspecialchars($priority['name']); ?></option>
@@ -46,7 +46,7 @@ ob_start();
 
                     <div class="mb-3">
                         <label for="taskCategory" class="form-label">Categoría</label>
-                        <select id="taskCategory" class="form-select" required>
+                        <select name="category_id" id="taskCategory" class="form-select" required>
                             <option value="">Selecciona una categoría</option>
                             <?php foreach ($categories as $category): ?>
                                 <option value="<?= $category['id']; ?>"><?= htmlspecialchars($category['name']); ?></option>
@@ -54,10 +54,19 @@ ob_start();
                         </select>
                     </div>
 
+                    <div class="mb-3">
+                        <label for="deadlineDate" class="form-label">Fecha de entrega</label>
+                        <input name="deadline_date" id="deadlineDate" class="form-control" type="datetime-local" required/>
+
+                    </div>
+
+
                     <div class="text-center">
                         <button type="submit" class="btn btn-success">Crear Tarea</button>
                     </div>
+
                 </form>
+
             <?php endif; ?>
 
         </div>

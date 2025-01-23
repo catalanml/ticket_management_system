@@ -1,13 +1,12 @@
 <?php
 ob_start();
 ?>
-<script src="/js/tasks/tasks.js" defer></script>
 
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <h2 class="text-dark text-center mb-4">Administración de Tareas</h2>
-            
+
             <!-- Listado de tareas -->
             <?php if (!empty($tasks)): ?>
                 <table class="table table-bordered table-striped">

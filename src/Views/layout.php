@@ -9,11 +9,10 @@
 </head>
 <body>
 <div class="d-flex">
-    <!-- Sidebar -->
     <nav class="sidebar bg-dark text-white p-4" style="width: 250px; min-height: 100vh;">
         <h4 class="mb-4">Task Management</h4>
         <ul class="nav flex-column">
-            <!-- Agrupación de "Tareas" -->
+
             <li class="nav-item">
                 <div class="accordion" id="taskAccordion">
                     <div class="accordion-item">
@@ -26,7 +25,12 @@
                             <div class="accordion-body bg-dark p-0">
                                 <ul class="nav flex-column">
                                     <li class="nav-item"><a class="nav-link text-white" href="/tasks/createForm">Crear tarea</a></li>
-                                    <li class="nav-item"><a class="nav-link text-white" href="/dashboard">Mis tareas asignadas</a></li>
+                                    <li class="nav-item">
+                                        <a class="nav-link text-white" href="/dashboard">Todas las tareas</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link text-white" href="/dashboard?assignedUserId=<?php echo $_SESSION['user_id']; ?>">Mis tareas asignadas</a>
+                                    </li>
                                     <li class="nav-item"><a class="nav-link text-white" href="/tasks/assign">Asignar tareas</a></li>
                                 </ul>
                             </div>
@@ -35,14 +39,13 @@
                 </div>
             </li>
 
-            <!-- Otros elementos -->
+
             <li class="nav-item"><a class="nav-link text-white" href="/categories">Administrar categorias</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="/priorities">Administrar prioridades</a></li>
             <li class="nav-item"><a class="nav-link text-danger" href="/logout">Cerrar sesión</a></li>
         </ul>
     </nav>
 
-    <!-- Main Content -->
     <div class="content p-4 w-100 bg-light">
         <?= $content ?? ''; ?>
     </div>

@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const taskPrioritySelect = document.getElementById('taskPriority');
     const taskCategorySelect = document.getElementById('taskCategory');
     const taskTableBody = document.getElementById('taskTableBody');
+    const deadlineDateInput = document.getElementById('deadlineDate');
 
     // Mostrar alerta estilizada
     function showAlert(message, type = 'danger') {
@@ -39,8 +40,9 @@ document.addEventListener('DOMContentLoaded', function () {
             const observation = taskObservationInput.value.trim();
             const priorityId = taskPrioritySelect.value;
             const categoryId = taskCategorySelect.value;
+            const deadlineDateValue = deadlineDateInput.value; // Corrección aquí
 
-            if (!title || !description || !priorityId || !categoryId) {
+            if (!title || !description || !priorityId || !categoryId || !deadlineDateValue) {
                 showAlert('Todos los campos obligatorios deben estar llenos.', 'danger');
                 return;
             }
@@ -56,6 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     observation,
                     priority_id: priorityId,
                     category_id: categoryId,
+                    deadline_date: deadlineDateValue
                 }),
             })
                 .then(response => response.json())
@@ -69,12 +72,12 @@ document.addEventListener('DOMContentLoaded', function () {
                             <td>${data.task.description}</td>
                             <td>${data.task.priority}</td>
                             <td>${data.task.category}</td>
+                            <td>${data.task.deadline_date}</td>
                             <td>
                                 <button class="btn btn-warning btn-sm editTask">Editar</button>
                                 <button class="btn btn-danger btn-sm deleteTask">Eliminar</button>
                             </td>
                         `;
-                        taskTableBody.appendChild(newRow);
 
                         taskForm.reset();
                         showAlert('Tarea creada con éxito.', 'success');

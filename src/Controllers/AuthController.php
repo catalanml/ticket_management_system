@@ -15,8 +15,18 @@ class AuthController
 
     public function loginForm()
     {
+        session_start();
+
+        // Si el usuario ya inició sesión, redirigir al dashboard
+        if (isset($_SESSION['user_id'])) {
+            header("Location: /dashboard");
+            exit;
+        }
+
+        // Si no está autenticado, mostrar el formulario de login
         require __DIR__ . '/../Views/auth/login.php';
     }
+
 
     public function registerForm()
     {

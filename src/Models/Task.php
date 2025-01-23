@@ -9,7 +9,7 @@ class Task extends Model
     public function getAllTasks(): array
     {
         $stmt = $this->pdo->query("
-            SELECT t.id, t.title, t.description, t.observation, 
+            SELECT t.id, t.title, 
                    p.name AS priority, c.name AS category
             FROM tasks t
             LEFT JOIN priorities p ON t.priority_id = p.id
@@ -19,7 +19,23 @@ class Task extends Model
         return $stmt->fetchAll();
     }
 
+    public function getLastInsertedId(): int
+    {
+        return (int) $this->pdo->lastInsertId();
+    }
+
     public function getTaskById(int $id): array
+    {
+        $stmt = $this->pdo->prepare("
+            SELECT *
+            FROM tasks t
+            WHERE t.id = :id
+        ");
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetch();
+    }
+
+    public function getTaskDetailById(int $id): array
     {
         $stmt = $this->pdo->prepare("
             SELECT t.id, t.title, t.description, t.observation, 
@@ -36,8 +52,8 @@ class Task extends Model
     public function createTask(array $data): bool
     {
         $stmt = $this->pdo->prepare("
-            INSERT INTO tasks (title, description, observation, priority_id, category_id, user_id, created_by) 
-            VALUES (:title, :description, :observation, :priority_id, :category_id, :user_id, :created_by)
+            INSERT INTO tasks (title, description, observation, priority_id, category_id, user_id, created_by, deadline_date) 
+            VALUES (:title, :description, :observation, :priority_id, :category_id, :user_id, :created_by, :deadline_date)
         ");
         return $stmt->execute($data);
     }
@@ -47,7 +63,7 @@ class Task extends Model
         $stmt = $this->pdo->prepare("
             UPDATE tasks
             SET title = :title, description = :description, observation = :observation,
-                priority_id = :priority_id, category_id = :category_id, edited_by = :edited_by
+                priority_id = :priority_id, category_id = :category_id, edited_by = :edited_by, deadline_date = :deadline_date          
             WHERE id = :id
         ");
         return $stmt->execute($data);

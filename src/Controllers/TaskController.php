@@ -67,9 +67,11 @@ class TaskController
         $observation = $input['observation'] ?? null;
         $priorityId = $input['priority_id'] ?? null;
         $categoryId = $input['category_id'] ?? null;
+        $deadlineDate = $input['deadline_date'] ?? null;
         $createdBy = $_SESSION['user_id'] ?? null;
 
-        if (empty($title) || empty($description) || empty($priorityId) || empty($categoryId)) {
+
+        if (empty($title) || empty($description) || empty($priorityId) || empty($categoryId) || empty($deadlineDate)) {
             echo json_encode(['status' => 'error', 'message' => 'Todos los campos obligatorios deben estar llenos.']);
             return;
         }
@@ -81,7 +83,8 @@ class TaskController
                 'observation' => $observation,
                 'priority_id' => $priorityId,
                 'category_id' => $categoryId,
-                'user_id' => $createdBy, // Asociamos la tarea al usuario actual
+                'deadline_date' => $deadlineDate,
+                'user_id' => $createdBy,
                 'created_by' => $createdBy
             ]);
 
@@ -90,7 +93,7 @@ class TaskController
 
             echo json_encode([
                 'status' => 'success',
-                'message' => 'Tarea creada con éxito.',
+                'message' => 'Tarea creada',
                 'task' => $newTask
             ]);
         } catch (\Exception $e) {
@@ -114,9 +117,11 @@ class TaskController
         $observation = $input['observation'] ?? null;
         $priorityId = $input['priority_id'] ?? null;
         $categoryId = $input['category_id'] ?? null;
+        $deadlineDate = $input['deadline_date'] ?? null;
         $editedBy = $_SESSION['user_id'] ?? null;
 
-        if (empty($id) || empty($title) || empty($description) || empty($priorityId) || empty($categoryId)) {
+
+        if (empty($id) || empty($title) || empty($description) || empty($priorityId) || empty($categoryId) || empty($deadlineDate)) {
             echo json_encode(['status' => 'error', 'message' => 'Todos los campos obligatorios deben estar llenos.']);
             return;
         }
@@ -129,6 +134,7 @@ class TaskController
                 'observation' => $observation,
                 'priority_id' => $priorityId,
                 'category_id' => $categoryId,
+                'deadlineDate' => $deadlineDate,
                 'edited_by' => $editedBy
             ]);
 

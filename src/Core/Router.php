@@ -49,11 +49,23 @@ class Router
 
     public function handleRequest()
     {
-        $path = $_SERVER['REQUEST_URI'];
+        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH); // Obtiene solo el path de la URI
         $method = $_SERVER['REQUEST_METHOD'];
+        $queryString = $_SERVER['QUERY_STRING'] ?? '';
 
+        // Manejar /dashboard con parámetro assignedUserId
+        if ($uri === '/dashboard' && $method === 'GET') {
+            parse_str($queryString, $queryParams);
+            if (isset($queryParams['assignedUserId'])) {
+                $controller = new DashboardController();
+                $controller->showMyTask($queryParams['assignedUserId']);
+                return;
+            }
+        }
+
+        // Verificar si la ruta coincide con las definidas
         foreach ($this->routes as $route) {
-            if ($route['path'] === $path && $route['method'] === $method) {
+            if ($route['path'] === $uri && $route['method'] === $method) {
                 [$controllerClass, $method] = $route['controller'];
                 $controller = new $controllerClass();
                 $controller->$method();
