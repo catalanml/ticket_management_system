@@ -1,0 +1,37 @@
+.sidebar {
+    width: 250px;
+    min-height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.sidebar h3 {
+    font-size: 20px;
+    margin-bottom: 30px;
+    font-weight: 700;
+}
+
+.sidebar .nav-link {
+    font-size: 16px;
+    padding: 10px;
+    display: block;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.sidebar .nav-link:hover, .sidebar .nav-link.active {
+    background-color: #495057;
+    text-decoration: none;
+}
+
+.content {
+    margin-left: 250px;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+h2 {
+    font-weight: 600;
+}

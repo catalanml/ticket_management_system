@@ -25,33 +25,41 @@ class AuthController
 
     public function login()
     {
-        $username = $_POST['username'];
-        $password = $_POST['password'];
+        session_start();
 
-        $user = $this->userModel->findByUsername($username);
+        $email = $_POST['email'] ?? '';
+        $password = $_POST['password'] ?? '';
+
+        $user = $this->userModel->findByEmail($email);
 
         if ($user && password_verify($password, $user['password'])) {
-            session_start();
+
             $_SESSION['user_id'] = $user['id'];
-            header("Location: /tasks");
+            $_SESSION['user'] = [
+                'firstname' => $user['firstname'],
+                'lastname' => $user['lastname'],
+                'email' => $user['email']
+            ];
+
+            header("Location: /dashboard");
             exit;
         }
 
-        $_SESSION['error'] = "Invalid credentials!";
+        $_SESSION['error'] = "Credenciales inválidas.";
         header("Location: /login");
+        exit;
     }
+
 
     public function register()
     {
-
-        file_put_contents('/tmp/debug.log', json_encode($_POST) . PHP_EOL, FILE_APPEND);
-
-        $username = $_POST['username'];
+        $firstname = $_POST['firstname'];
+        $lastname = $_POST['lastname'];
         $email = $_POST['email'];
         $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
 
 
-        if ($this->userModel->createUser(['username' => $username, 'email' => $email ,'password' => $password])) {
+        if ($this->userModel->createUser(['firstname' => $firstname, 'lastname' => $lastname , 'email' => $email ,'password' => $password])) {
             header("Location: /login");
             exit;
         }

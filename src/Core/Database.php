@@ -9,7 +9,7 @@ class Database
 {
     private static ?PDO $connection = null;
 
-    public static function connect(): PDO
+    public static function getConnection(): PDO
     {
         if (self::$connection === null) {
             $config = require __DIR__ . '/../../config/database.php';

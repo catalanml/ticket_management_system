@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700;900&display=swap');
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #152733;
+    color: #ffffff;
+}
+
+.sidebar {
+    background-color: #111827;
+}
+
+.sidebar .nav-link {
+    color: #9ca3af;
+}
+
+.sidebar .nav-link:hover {
+    color: #ffffff;
+}
+
+.content {
+    background-color: #f8f9fa;
+    color: #212529;
+}
+
+.alert-info {
+    background-color: #e9f7fe;
+    color: #0c5460;
+    border-color: #bee5eb;
+}
+
+
+h5.modal-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #212529; /* Negro estándar de Bootstrap */
+    text-transform: capitalize; /* Para aplicar formato de título */
+}
+
+.modal-header {
+    border-bottom: 1px solid #dee2e6;
+}
+
+.modal-body {
+    font-size: 1rem;
+    color: #495057;
+}
+
+.modal-footer button {
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+}
+
+.modal-footer .btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.modal-footer .btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}

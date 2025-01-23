@@ -7,16 +7,16 @@ use App\Core\Model;
 
 class User extends Model
 {
-    public function findByUsername(string $username)
+    public function findByEmail(string $username)
     {
-        $stmt = $this->db->prepare("SELECT * FROM users WHERE name = :username LIMIT 1");
-        $stmt->execute(['username' => $username]);
+        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE email = :email");
+        $stmt->execute(['email' => $username]);
         return $stmt->fetch();
     }
 
     public function createUser(array $data): bool
     {
-        $stmt = $this->db->prepare("INSERT INTO users (name, email , password) VALUES (:username, :email, :password)");
+        $stmt = $this->pdo->prepare("INSERT INTO users (firstname, lastname, email , password) VALUES (:firstname, :lastname, :email, :password)");
         return $stmt->execute($data);
     }
 }
