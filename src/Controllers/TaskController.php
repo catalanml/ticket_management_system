@@ -178,7 +178,7 @@ class TaskController
             exit;
         }
 
-        // Obtener el ID de la tarea desde los parámetros de la URL
+
         $taskId = $_GET['id'] ?? null;
 
         if (!$taskId) {
@@ -187,8 +187,9 @@ class TaskController
             return;
         }
 
-        // Consultar los datos de la tarea
+      
         $task = $this->taskModel->getTaskById($taskId);
+
 
         if (!$task) {
             http_response_code(404);
@@ -197,9 +198,13 @@ class TaskController
         }
 
         $task['status'] = $this->taskModel->isTaskCompleted($task['id']) ? 'completed' : 'pending';
-        $task['priority_name'] = $this->priorityModel->getPriorityById($task['priority_id'])['name'];
+        $priority = $this->priorityModel->getPriorityById($task['priority_id']);
+        $task['priority_name'] = $priority['name'];
+        $task['priority_type'] = $priority['type'];
         $task['category_name'] = $this->categoryModel->getCategoryById($task['category_id'])['name'];
-        $task['assigned_user_id'] = $this->taskModel->getAssignedUsertoTask($task['id'])['id'];
+
+        $assignedUser = $this->taskModel->getAssignedUsertoTask($task['id']);
+        $task['assigned_user_id'] = !empty($assignedUser) ? $assignedUser['id'] : null;
 
         $userId = $_SESSION['user_id'];
 

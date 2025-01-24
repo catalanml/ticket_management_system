@@ -13,32 +13,32 @@
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover mt-4">
                         <thead class="table-dark text-center">
-                        <tr>
-                            <th>Título</th>
-                            <th>Prioridad</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
+                            <tr>
+                                <th>Título</th>
+                                <th>Prioridad</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        <?php foreach ($tasks as $task): ?>
-                            <tr>
-                                <td><?= htmlspecialchars($task['title']); ?></td>
-                                <td class="text-center">
-                                    <span class="badge bg-<?= $task['priority'] === 'high' ? 'danger' : ($task['priority'] === 'medium' ? 'warning' : 'success'); ?>">
-                                        <?= htmlspecialchars(ucfirst($task['priority'])); ?>
-                                    </span>
-                                </td>
-                                <td class="text-center">
-                                    <span class="badge bg-<?= $task['status'] === 'completed' ? 'success' : 'secondary'; ?>">
-                                        <?= $task['status'] === 'completed' ? 'Completada' : 'Pendiente'; ?>
-                                    </span>
-                                </td>
-                                <td class="text-center">
-                                    <a href="/tasks/detail?id=<?= $task['id']; ?>" class="btn btn-info btn-sm">Ver Detalle</a>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
+                            <?php foreach ($tasks as $task): ?>
+                                <tr>
+                                    <td><?= htmlspecialchars($task['title']); ?></td>
+                                    <td class="text-center">
+                                        <span class="badge bg-<?= $task['priority_type'] === 'high' ? 'danger' : ($task['priority_type'] === 'medium' ? 'warning' : 'success'); ?>">
+                                            <?= htmlspecialchars(ucfirst($task['priority_name'])); ?>
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-<?= $task['status'] === 'completed' ? 'success' : 'secondary'; ?>">
+                                            <?= $task['status'] === 'completed' ? 'Completada' : 'Pendiente'; ?>
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="/tasks/detail?id=<?= $task['id']; ?>" class="btn btn-info btn-sm">Ver Detalle</a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>

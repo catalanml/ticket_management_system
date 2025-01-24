@@ -11,11 +11,8 @@ class Task extends Model
     public function getAllTasks(): array
     {
         $stmt = $this->pdo->query("
-            SELECT t.id, t.title, 
-                   p.name AS priority, c.name AS category
+            SELECT *
             FROM tasks t
-            LEFT JOIN priorities p ON t.priority_id = p.id
-            LEFT JOIN categories c ON t.category_id = c.id
             WHERE t.deleted = 0
         ");
         return $stmt->fetchAll();
@@ -31,7 +28,6 @@ class Task extends Model
 
         $response = [];
 
-        //fetch the user assigned to the task (1 user per task)
 
         $stmt = $this->pdo->prepare("
                         SELECT user_id 
@@ -42,28 +38,26 @@ class Task extends Model
 
         $userId = $stmt->fetch();
 
-        //if the task is not assigned to any user, return an empty array
         if (!$userId) {
             return [];
         }
 
-        //fetch the user details via model
         $userModel = new User();
         $response['assigned_user'] = $userModel->getUserById($userId['user_id']);
 
 
         return $response;
     }
-
-    public function getTaskById(int $id): array
+    
+    public function getTaskById(int $id): array|false
     {
         $stmt = $this->pdo->prepare("
-            SELECT *
+            SELECT t.id, t.title, t.description, t.priority_id, t.category_id, t.user_id, t.deadline_date
             FROM tasks t
             WHERE t.id = :id
         ");
         $stmt->execute(['id' => $id]);
-        return $stmt->fetch();
+        return $stmt->fetch(); 
     }
 
     public function isTaskCompleted(): bool
@@ -79,19 +73,6 @@ class Task extends Model
         return $record ? true : false;
     }
 
-    public function getTaskDetailById(int $id): array
-    {
-        $stmt = $this->pdo->prepare("
-            SELECT t.id, t.title, t.description, t.observation, 
-                   p.name AS priority, c.name AS category
-            FROM tasks t
-            LEFT JOIN priorities p ON t.priority_id = p.id
-            LEFT JOIN categories c ON t.category_id = c.id
-            WHERE t.id = :id
-        ");
-        $stmt->execute(['id' => $id]);
-        return $stmt->fetch();
-    }
 
     public function createTask(array $data): bool
     {

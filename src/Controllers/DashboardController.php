@@ -3,14 +3,33 @@
 namespace App\Controllers;
 
 use App\Models\Task;
+use App\Models\Priority;
+
 
 class DashboardController
 {
     private Task $taskModel;
+    private Priority $priorityModel;
 
     public function __construct()
     {
         $this->taskModel = new Task();
+        $this->priorityModel = new Priority();
+    }
+
+    public function addTaskDetails($tasks)
+    {
+        foreach ($tasks as $key => $task) {
+            $tasks[$key]['status'] = $this->taskModel->isTaskCompleted($task['id']) ? 'completed' : 'pending';
+
+            $priority = $this->priorityModel->getPriorityById($task['priority_id']);
+            $tasks[$key]['priority_name'] = $priority['name'];
+            $tasks[$key]['priority_type'] = $priority['type'];
+
+            $tasks[$key]['status'] = $this->taskModel->isTaskCompleted($task['id']) ? 'completed' : 'pending';
+        }
+
+        return $tasks;
     }
 
     /**
@@ -21,6 +40,7 @@ class DashboardController
         session_start();
         $userId = $_SESSION['user_id'] ?? null;
 
+
         if (!$userId) {
             header("Location: /login");
             exit;
@@ -28,9 +48,7 @@ class DashboardController
 
         $tasks = $this->taskModel->getAllTasks();
 
-        foreach ($tasks as $key => $task) {
-            $tasks[$key]['status'] = $this->taskModel->isTaskCompleted($task['id']) ? 'completed' : 'pending';
-        }
+        $tasks = $this->addTaskDetails($tasks);
 
         $user = $_SESSION['user'] ?? ['firstname' => 'Usuario', 'lastname' => ''];
         require __DIR__ . '/../Views/dashboard.php';
@@ -42,10 +60,8 @@ class DashboardController
 
         $tasks = $this->taskModel->getAssignedTasks($assignedUserId);
 
-        
-        foreach ($tasks as $key => $task) {
-            $tasks[$key]['status'] = $this->taskModel->isTaskCompleted($task['id']) ? 'completed' : 'pending';
-        }
+        $tasks = $this->addTaskDetails($tasks);
+
 
         $user = $_SESSION['user'] ?? ['firstname' => 'Usuario', 'lastname' => ''];
         require __DIR__ . '/../Views/dashboard.php'; // Cambia a la vista que prefieras
