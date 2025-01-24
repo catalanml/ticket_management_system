@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Core\Model;
-use PDO;
+use App\Models\Task;
 
 class Category extends Model
 {
@@ -40,6 +40,17 @@ class Category extends Model
     public function deleteCategory(int $id): bool
     {
         $stmt = $this->pdo->prepare("UPDATE categories SET deleted = 1 WHERE id = :id");
-        return $stmt->execute(['id' => $id]);
+        $stmt->execute(['id' => $id]);
+
+        //get all tasks associated with the category
+        $taskModel = new Task();
+        $tasks = $taskModel->getTaskByCategoryId($id);
+
+        //delete all tasks associated with the category
+        foreach ($tasks as $task) {
+            $taskModel->deleteTask($task['id']);
+        }
+
+        return true;
     }
 }

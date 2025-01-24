@@ -162,7 +162,11 @@ document.addEventListener('DOMContentLoaded', function () {
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    ¿Estás seguro de que deseas eliminar esta categoría?
+                                    ¿Estás seguro de que deseas eliminar esta categoría? 
+                                    
+                                    <strong> Esta acción eliminara todas las tareas.</strong>
+                                    <strong>Esta acción no se puede deshacer.</strong>
+                                    
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>

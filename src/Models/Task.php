@@ -20,6 +20,30 @@ class Task extends Model
         return $stmt->fetchAll();
     }
 
+    public function getTaskByCategoryId(int $categoryId): array
+    {
+        $stmt = $this->pdo->prepare("
+            SELECT *
+            FROM tasks t
+            WHERE t.category_id = :category_id
+            AND t.deleted = 0
+        ");
+        $stmt->execute(['category_id' => $categoryId]);
+        return $stmt->fetchAll();
+    }
+
+    public function getTaskByPriorityId(int $priorityId): array
+    {
+        $stmt = $this->pdo->prepare("
+            SELECT *
+            FROM tasks t
+            WHERE t.priority_id = :priority_id
+            AND t.deleted = 0
+        ");
+        $stmt->execute(['priority_id' => $priorityId]);
+        return $stmt->fetchAll();
+    }
+
     public function addTaskDetails($tasks)
     {
 
@@ -169,7 +193,11 @@ class Task extends Model
     public function deleteTask(int $id): bool
     {
         $stmt = $this->pdo->prepare("UPDATE tasks SET deleted = 1 WHERE id = :id");
-        return $stmt->execute(['id' => $id]);
+        $stmt->execute(['id' => $id]);
+
+        $stmt = $this->pdo->prepare("UPDATE user_task_assignments SET deleted = 1 WHERE task_id = :task_id");
+        $stmt->execute(['task_id' => $id]);
+        return true;
     }
 
     public function getAssignedTasks($userId): array

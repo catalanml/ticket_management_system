@@ -16,7 +16,7 @@ class Priority extends Model
     public function getLastInsertedId(): int
     {
         return (int) $this->pdo->lastInsertId();
-    }  
+    }
 
     public function getPriorityById(int $id): array
     {
@@ -40,6 +40,16 @@ class Priority extends Model
     public function deletePriority(int $id): bool
     {
         $stmt = $this->pdo->prepare("UPDATE priorities SET deleted = 1 WHERE id = :id");
-        return $stmt->execute(['id' => $id]);
+        $stmt->execute(['id' => $id]);
+
+        $taskModel = new Task();
+        $tasks = $taskModel->getTaskByPriorityId($id);
+
+
+        foreach ($tasks as $task) {
+            $taskModel->deleteTask($task['id']);
+        }
+
+        return true;
     }
 }

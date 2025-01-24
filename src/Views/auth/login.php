@@ -39,6 +39,10 @@ session_start();
                         <div class="form-button mt-3">
                             <button id="submit" type="submit" class="btn btn-primary">Iniciar sesión</button>
                         </div>
+
+                        <div class="mt-3 text-center">
+                            <p>¿No tienes una cuenta? <a href="/register" class="text-primary">Regístrate aquí</a></p>
+                        </div>
                     </form>
                 </div>
             </div>
