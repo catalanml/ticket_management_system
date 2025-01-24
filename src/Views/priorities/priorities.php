@@ -1,6 +1,4 @@
-<?php
-ob_start();
-?>
+<?php ob_start(); ?>
 <script src="/js/priorities/priorities.js" defer></script>
 
 <div class="container py-5">
@@ -8,7 +6,6 @@ ob_start();
         <div class="col-md-8">
             <h2 class="text-dark text-center mb-4">Administrar Prioridades</h2>
 
-            <!-- Contenedor de alertas -->
             <div class="alert-container" id="alertContainer"></div>
 
             <form id="priorityForm" class="mb-4">

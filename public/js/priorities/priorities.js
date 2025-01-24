@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const noElementsMessage = document.getElementById('noprioritiesMessage');
     let currentpriorityId = null;
 
-    // Función para mostrar alertas estilizadas
     function showAlert(message, type = 'danger', inModal = false) {
 
         if (inModal) {
@@ -36,8 +35,6 @@ document.addEventListener('DOMContentLoaded', function () {
             alertContainer.innerHTML = '';
         }, 3000);
     }
-
-    // Crear prioridad
     priorityForm.addEventListener('submit', function (e) {
         e.preventDefault();
 
@@ -97,9 +94,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     });
 
-    // Validar si el cuerpo de la tabla existe antes de agregar eventos
     if (priorityTableBody) {
-        // Manejar clic en editar prioridad
         priorityTableBody.addEventListener('click', function (e) {
             if (e.target.classList.contains('editpriority')) {
                 const row = e.target.closest('tr');
@@ -107,7 +102,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 const currentName = row.querySelector('td:nth-child(2)').textContent;
                 const currentType = row.querySelector('td:nth-child(3)').textContent;
 
-                // Crear modal de edición dinámicamente
                 const editModalHtml = `
                     <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
                         <div class="modal-dialog">

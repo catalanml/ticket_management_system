@@ -1,4 +1,5 @@
 <?php ob_start(); ?>
+<script src="/js/tasks/detail.js" defer></script>
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
@@ -24,7 +25,7 @@
                                     </span></p>
                             </div>
                         </div>
-     
+
                         <div class="mb-3">
                             <label for="deadlineDate" class="form-label">Fecha de entrega</label>
                             <p id="deadlineDate" class="text-muted">
@@ -36,24 +37,30 @@
                             <label for="taskDescription" class="form-label">Descripción</label>
                             <p id="taskDescription" class="text-justify text-muted"><?= htmlspecialchars($task['description']); ?></p>
                         </div>
-      
+
                         <div class="mb-3">
                             <label for="taskObservation" class="form-label">Observaciones</label>
-                            <?php if ($task['assigned_user_id'] === $_SESSION['user_id']): ?>
+                            <?php if ($task['status'] === 'completed'): ?>
+                                <p id="taskObservation" class="text-justify text-muted"><?= htmlspecialchars($task['observation'] ?? 'Sin observaciones.'); ?></p>
+                            <?php elseif ($task['assigned_user_id'] === $_SESSION['user_id']): ?>
                                 <textarea id="taskObservation" class="form-control" rows="3" placeholder="Añade tus observaciones aquí"><?= htmlspecialchars($task['observation'] ?? ''); ?></textarea>
                             <?php else: ?>
                                 <p id="taskObservation" class="text-justify text-muted"><?= htmlspecialchars($task['observation'] ?? 'Sin observaciones.'); ?></p>
                             <?php endif; ?>
                         </div>
 
+                        <?php if (isset($task['assigned_user_id'])): ?>
+                            <input type="hidden" id="assignedUserId" value="<?= htmlspecialchars($task['assigned_user_id']); ?>">
+                        <?php endif; ?>
 
-                        <?php if ($task['assigned_user_id'] === $_SESSION['user_id']): ?>
+                        <?php if ($task['status'] !== 'completed' && $task['assigned_user_id'] === $_SESSION['user_id']): ?>
                             <div class="text-center mt-4">
                                 <button type="button" id="completeTaskButton" class="btn btn-success">
                                     <i class="fas fa-check"></i> Completar Tarea
                                 </button>
                             </div>
                         <?php endif; ?>
+
                     </form>
                 </div>
             </div>

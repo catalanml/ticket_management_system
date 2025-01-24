@@ -6,6 +6,7 @@ use App\Models\Task;
 use App\Models\Category;
 use App\Models\Priority;
 use App\Models\User;
+use Exception;
 
 class TaskController
 {
@@ -104,40 +105,75 @@ class TaskController
         }
     }
 
-    /**
-     * Editar una tarea existente.
-     */
+
     public function edit()
     {
         session_start();
-        header('Content-Type: application/json');
 
+        if (!isset($_SESSION['user_id'])) {
+            header("Location: /login");
+            exit;
+        }
+
+        // Obtener el ID de la tarea desde los parámetros de la URL
+        $taskId = $_GET['id'] ?? null;
+
+        if (!$taskId) {
+            http_response_code(400);
+            echo "El ID de la tarea es obligatorio.";
+            return;
+        }
+
+        // Consultar los datos de la tarea
+        $task = $this->taskModel->getTaskById($taskId);
+
+        if (!$task) {
+            http_response_code(404);
+            echo "Tarea no encontrada.";
+            return;
+        }
+
+        // Obtener datos adicionales (categorías y prioridades)
+        $categories = $this->categoryModel->getAllCategories();
+        $priorities = $this->priorityModel->getAllPriorities();
+
+        require __DIR__ . '/../Views/tasks/edit_task.php';
+    }
+
+    public function update()
+    {
+        session_start();
+
+        if (!isset($_SESSION['user_id'])) {
+            header("Location: /login");
+            exit;
+        }
+
+        // Leer datos de la solicitud POST
         $input = json_decode(file_get_contents('php://input'), true);
 
         $id = $input['id'] ?? null;
         $title = $input['title'] ?? '';
         $description = $input['description'] ?? '';
-        $observation = $input['observation'] ?? null;
         $priorityId = $input['priority_id'] ?? null;
         $categoryId = $input['category_id'] ?? null;
         $deadlineDate = $input['deadline_date'] ?? null;
-        $editedBy = $_SESSION['user_id'] ?? null;
+        $editedBy = $_SESSION['user_id'];
 
-
-        if (empty($id) || empty($title) || empty($description) || empty($priorityId) || empty($categoryId) || empty($deadlineDate)) {
-            echo json_encode(['status' => 'error', 'message' => 'Todos los campos obligatorios deben estar llenos.']);
+        if (!$id || empty($title) || empty($description) || !$priorityId || !$categoryId || empty($deadlineDate)) {
+            echo json_encode(['status' => 'error', 'message' => 'Todos los campos son obligatorios.']);
             return;
         }
 
         try {
+            // Actualizar la tarea
             $this->taskModel->updateTask([
                 'id' => $id,
                 'title' => $title,
                 'description' => $description,
-                'observation' => $observation,
                 'priority_id' => $priorityId,
                 'category_id' => $categoryId,
-                'deadlineDate' => $deadlineDate,
+                'deadline_date' => $deadlineDate,
                 'edited_by' => $editedBy
             ]);
 
@@ -146,6 +182,7 @@ class TaskController
             echo json_encode(['status' => 'error', 'message' => 'No se pudo actualizar la tarea. Detalles: ' . $e->getMessage()]);
         }
     }
+
 
     /**
      * Eliminar una tarea.
@@ -181,7 +218,6 @@ class TaskController
             exit;
         }
 
-
         $taskId = $_GET['id'] ?? null;
 
         if (!$taskId) {
@@ -203,9 +239,8 @@ class TaskController
         $task['priority_name'] = $priority['name'];
         $task['priority_type'] = $priority['type'];
         $task['category_name'] = $this->categoryModel->getCategoryById($task['category_id'])['name'];
-
-        $assignedUser = $this->taskModel->getAssignedUsertoTask($task['id']);
-        $task['assigned_user_id'] = !empty($assignedUser) ? $assignedUser['id'] : null;
+        $assignedUserId = $this->taskModel->getAssignedUsertoTask($task['id']);
+        $task['assigned_user_id'] = (is_null($assignedUserId) ? null : $assignedUserId);
 
         $userId = $_SESSION['user_id'];
 
@@ -244,6 +279,47 @@ class TaskController
         }
     }
 
+    public function complete()
+    {
+        session_start();
+        header('Content-Type: application/json');
+
+        if (!isset($_SESSION['user_id'])) {
+            echo json_encode(['status' => 'error', 'message' => 'No has iniciado sesión.']);
+            return;
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+
+        $taskId = $input['id'] ?? null;
+        $status = $input['status'] ?? null;
+        $observation = $input['observation'] ?? null;
+        $userId = $_SESSION['user_id'];
+
+        if (!$taskId || !$status) {
+            echo json_encode(['status' => 'error', 'message' => 'El ID de la tarea y el estado son obligatorios.']);
+            return;
+        }
+
+        try {
+
+            $assignedTask = $this->taskModel->getAssignedUsertoTask($taskId);
+
+
+            if (!$assignedTask || $assignedTask !== $userId) {
+                echo json_encode(['status' => 'error', 'message' => 'No estás autorizado para completar esta tarea.']);
+                return;
+            }
+
+            // Actualizar el estado de la tarea como completada
+            $this->taskModel->updateTaskStatus($taskId, $userId, $status, $observation);
+
+            echo json_encode(['status' => 'success', 'message' => 'Tarea completada con éxito.']);
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => 'Error al completar la tarea: ' . $e->getMessage()]);
+        }
+    }
+
     public function manageTasks()
     {
         session_start();
@@ -257,11 +333,6 @@ class TaskController
         $tasks = $this->taskModel->addTaskDetails($tasks);
 
         $users = $this->userModel->getAllUsers();
-
-        foreach ($tasks as &$task) {
-            $assignedUser = $this->taskModel->getAssignedUsertoTask($task['id']);
-            $task['assigned_user_id'] = $assignedUser['user_id'] ?? null;
-        }
 
         require __DIR__ . '/../Views/tasks/manage_tasks.php';
     }

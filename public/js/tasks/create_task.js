@@ -5,10 +5,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const taskObservationInput = document.getElementById('taskObservation');
     const taskPrioritySelect = document.getElementById('taskPriority');
     const taskCategorySelect = document.getElementById('taskCategory');
-    const taskTableBody = document.getElementById('taskTableBody');
     const deadlineDateInput = document.getElementById('deadlineDate');
 
-    // Mostrar alerta estilizada
     function showAlert(message, type = 'danger') {
         const alertContainer = document.getElementById('alertContainer') || createAlertContainer();
         alertContainer.innerHTML = `
@@ -22,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 3000);
     }
 
-    // Crear contenedor de alertas si no existe
+
     function createAlertContainer() {
         const container = document.createElement('div');
         container.id = 'alertContainer';
@@ -30,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return container;
     }
 
-    // Crear tarea
+
     if (taskForm) {
         taskForm.addEventListener('submit', function (e) {
             e.preventDefault();
@@ -40,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const observation = taskObservationInput.value.trim();
             const priorityId = taskPrioritySelect.value;
             const categoryId = taskCategorySelect.value;
-            const deadlineDateValue = deadlineDateInput.value; // Corrección aquí
+            const deadlineDateValue = deadlineDateInput.value;
 
             if (!title || !description || !priorityId || !categoryId || !deadlineDateValue) {
                 showAlert('Todos los campos obligatorios deben estar llenos.', 'danger');
@@ -64,23 +62,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'success') {
-                        const newRow = document.createElement('tr');
-                        newRow.setAttribute('data-id', data.task.id);
-                        newRow.innerHTML = `
-                            <td>${data.task.id}</td>
-                            <td>${data.task.title}</td>
-                            <td>${data.task.description}</td>
-                            <td>${data.task.priority}</td>
-                            <td>${data.task.category}</td>
-                            <td>${data.task.deadline_date}</td>
-                            <td>
-                                <button class="btn btn-warning btn-sm editTask">Editar</button>
-                                <button class="btn btn-danger btn-sm deleteTask">Eliminar</button>
-                            </td>
-                        `;
 
-                        taskForm.reset();
                         showAlert('Tarea creada con éxito.', 'success');
+
+                        setTimeout(() => {
+                            window.location.href = '/tasks/manageTasks';
+                        }, 2000);
                     } else {
                         showAlert(data.message, 'danger');
                     }

@@ -1,14 +1,11 @@
-<?php
-ob_start();
-?>
-<script src="/js/tasks/tasks.js" defer></script>
+<?php ob_start(); ?>
+<script src="/js/tasks/create_task.js" defer></script>
 
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <h2 class="text-dark text-center mb-4">Administración de Tareas</h2>
 
-            <!-- Validación de existencia de categorías y prioridades -->
             <?php if (empty($categories) || empty($priorities)): ?>
                 <div class="alert alert-warning text-center">
                     Antes de crear tareas, asegúrate de tener al menos una categoría y una prioridad registradas.
@@ -18,6 +15,7 @@ ob_start();
                     <a href="/priorities" class="btn btn-primary">Ir a Prioridades</a>
                 </div>
             <?php else: ?>
+
                 <form id="taskForm" class="mb-4">
                     <div class="mb-3">
                         <label for="taskTitle" class="form-label">Título de la tarea</label>
@@ -56,8 +54,7 @@ ob_start();
 
                     <div class="mb-3">
                         <label for="deadlineDate" class="form-label">Fecha de entrega</label>
-                        <input name="deadline_date" id="deadlineDate" class="form-control" type="datetime-local" required/>
-
+                        <input name="deadline_date" id="deadlineDate" class="form-control" type="datetime-local" required min="<?= date('Y-m-d\TH:i'); ?>"/>
                     </div>
 
 

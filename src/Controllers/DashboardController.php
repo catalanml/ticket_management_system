@@ -43,11 +43,10 @@ class DashboardController
         session_start();
 
         $tasks = $this->taskModel->getAssignedTasks($assignedUserId);
-
         $tasks = $this->taskModel->addTaskDetails($tasks);
 
+        $user = $_SESSION['user'];
 
-        $user = $_SESSION['user'] ?? ['firstname' => 'Usuario', 'lastname' => ''];
-        require __DIR__ . '/../Views/dashboard.php'; // Cambia a la vista que prefieras
+        require __DIR__ . '/../Views/dashboard.php';
     }
 }

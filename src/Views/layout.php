@@ -39,7 +39,6 @@
                 </div>
             </li>
 
-
             <li class="nav-item"><a class="nav-link text-white" href="/categories">Administrar categorias</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="/priorities">Administrar prioridades</a></li>
             <li class="nav-item"><a class="nav-link text-danger" href="/logout">Cerrar sesión</a></li>

@@ -1,14 +1,33 @@
 document.addEventListener('DOMContentLoaded', function () {
     const taskTableBody = document.getElementById('taskTableBody');
     const deleteTaskModal = new bootstrap.Modal(document.getElementById('deleteTaskModal'));
+    const alertContainer = document.getElementById('alertContainer'); 
     let currentTaskId = null;
 
-    // Manejar selección de usuario
+
+    function showAlert(message, type = 'success') {
+        alertContainer.innerHTML = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+        setTimeout(() => {
+            alertContainer.innerHTML = '';
+        }, 3000);
+    }
+
+
     taskTableBody.addEventListener('change', function (e) {
         if (e.target.classList.contains('assignUserSelect')) {
             const row = e.target.closest('tr');
             const taskId = row.getAttribute('data-id');
             const userId = e.target.value;
+
+            if (!userId) {
+                showAlert('Debes seleccionar un usuario.', 'danger');
+                return;
+            }
 
             fetch('/tasks/assign', {
                 method: 'POST',
@@ -20,14 +39,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'success') {
-                        alert('Usuario asignado con éxito.');
-                    } 
+                        showAlert('Usuario asignado con éxito.', 'success');
+                    } else {
+                        showAlert(data.message, 'danger');
+                    }
                 })
-                .catch(error => console.error('Error:', error));
+                .catch(error => {
+                    console.error('Error:', error);
+                    showAlert('Ocurrió un error al asignar la tarea.', 'danger');
+                });
         }
     });
 
-    // Manejar clic en eliminar tarea
+
     taskTableBody.addEventListener('click', function (e) {
         if (e.target.classList.contains('deleteTask')) {
             const row = e.target.closest('tr');
@@ -36,7 +60,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Confirmar eliminación
     document.getElementById('confirmDeleteTask').addEventListener('click', function () {
         fetch('/tasks/delete', {
             method: 'POST',
@@ -51,11 +74,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     const row = document.querySelector(`tr[data-id="${currentTaskId}"]`);
                     row.remove();
                     deleteTaskModal.hide();
-                    alert('Tarea eliminada con éxito.');
+                    showAlert('Tarea eliminada con éxito.', 'success');
                 } else {
-                    alert('Error al eliminar tarea: ' + data.message);
+                    showAlert('Error al eliminar tarea: ' + data.message, 'danger');
                 }
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => {
+                console.error('Error:', error);
+                showAlert('Ocurrió un error al eliminar la tarea.', 'danger');
+            });
     });
 });

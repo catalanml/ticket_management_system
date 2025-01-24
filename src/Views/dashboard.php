@@ -17,6 +17,7 @@
                                 <th>Título</th>
                                 <th>Prioridad</th>
                                 <th>Estado</th>
+                                <th>Entrega</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -32,6 +33,11 @@
                                     <td class="text-center">
                                         <span class="badge bg-<?= $task['status'] === 'completed' ? 'success' : 'secondary'; ?>">
                                             <?= $task['status'] === 'completed' ? 'Completada' : 'Pendiente'; ?>
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-<?= strtotime($task['deadline_date']) >= strtotime(date('Y-m-d')) ? 'success' : 'danger'; ?>">
+                                            <?= strtotime($task['deadline_date']) >= strtotime(date('Y-m-d')) ? 'Al día' : 'Atrasada'; ?>
                                         </span>
                                     </td>
                                     <td class="text-center">

@@ -25,17 +25,28 @@ class Task extends Model
 
         $priorityModel = new Priority();
         $categoryModel = new Category();
+        $userModel = new User();
+
 
         foreach ($tasks as $key => $task) {
+
+            $tasks[$key]['status'] = $this->isTaskCompleted($task['id']) ? 'completed' : 'pending';
 
             $priority = $priorityModel->getPriorityById($task['priority_id']);
             $tasks[$key]['priority_name'] = $priority['name'];
             $tasks[$key]['priority_type'] = $priority['type'];
 
-            $tasks[$key]['status'] = $this->isTaskCompleted($task['id']) ? 'completed' : 'pending';
-
             $category = $categoryModel->getCategoryById($task['category_id']);
             $tasks[$key]['category_name'] = $category['name'];
+
+            $assignedUserId = $this->getAssignedUsertoTask($task['id']);
+            $tasks[$key]['assigned_user_id'] =  $assignedUserId;
+            $tasks[$key]['assigned_user_name'] = '';
+
+            if ($assignedUserId) {
+                $assignedUser = $userModel->getUserById($assignedUserId);
+                $tasks[$key]['assigned_user_name'] = ($assignedUser['firstname'] . ' ' . $assignedUser['lastname']);
+            }
         }
 
         return $tasks;
@@ -46,36 +57,55 @@ class Task extends Model
         return (int)$this->pdo->lastInsertId();
     }
 
-    public function getAssignedUsertoTask(int $taskId): ?array
+    public function getAssignedUsertoTask(int $taskId): ?int
     {
-
-        $response = [];
-
-
         $stmt = $this->pdo->prepare("
-                        SELECT user_id 
-                        FROM user_task_assignments 
-                        WHERE task_id = :task_id 
-                        and deleted = 0");
+            SELECT user_id 
+            FROM user_task_assignments 
+            WHERE task_id = :task_id 
+            AND deleted = 0
+            LIMIT 1
+        ");
+
         $stmt->execute(['task_id' => $taskId]);
 
-        $userId = $stmt->fetch();
+        $userId = $stmt->fetchColumn();
 
-        if (!$userId) {
-            return [];
-        }
-
-        $userModel = new User();
-        $response['assigned_user'] = $userModel->getUserById($userId['user_id']);
-
-
-        return $response;
+        return $userId ?: null;
     }
+
+    public function updateTaskStatus(int $taskId,  int $userId, string $status, ?string $observation = null): void
+    {
+
+        $stmt = $this->pdo->prepare("
+            UPDATE tasks
+                SET observation = :observation, 
+                edited_time = NOW()
+            WHERE id = :id
+        ");
+
+        $stmt->execute([
+            'observation' => $observation,
+            'id' => $taskId,
+        ]);
+
+        $stmt = $this->pdo->prepare("
+            UPDATE user_task_assignments
+            SET completed = 1
+            WHERE task_id = :task_id AND user_id = :user_id and deleted = 0");
+
+        $stmt->execute([
+            'task_id' => $taskId,
+            'user_id' => $userId,
+        ]);
+    }
+
+
 
     public function getTaskById(int $id): array|false
     {
         $stmt = $this->pdo->prepare("
-            SELECT t.id, t.title, t.description, t.priority_id, t.category_id, t.user_id, t.deadline_date
+            SELECT t.*
             FROM tasks t
             WHERE t.id = :id
         ");
@@ -83,18 +113,21 @@ class Task extends Model
         return $stmt->fetch();
     }
 
-    public function isTaskCompleted(): bool
+    public function isTaskCompleted($taskId): bool
     {
         $stmt = $this->pdo->prepare("
             SELECT t.id 
             FROM tasks t 
-            JOIN user_task_assignments uta ON t.id = uta.task_id and uta.completed = 1
-           ");
-        $stmt->execute();
+            JOIN user_task_assignments ut ON t.id = ut.task_id AND ut.completed = 1 
+            WHERE t.id = :task_id
+        ");
+
+        $stmt->execute(['task_id' => $taskId]);
 
         $record = $stmt->fetch();
         return $record ? true : false;
     }
+
 
 
     public function createTask(array $data): bool
@@ -106,16 +139,32 @@ class Task extends Model
         return $stmt->execute($data);
     }
 
-    public function updateTask(array $data): bool
+    public function updateTask(array $taskData): bool
     {
         $stmt = $this->pdo->prepare("
             UPDATE tasks
-            SET title = :title, description = :description, observation = :observation,
-                priority_id = :priority_id, category_id = :category_id, edited_by = :edited_by, deadline_date = :deadline_date          
+            SET 
+                title = :title,
+                description = :description,
+                priority_id = :priority_id,
+                category_id = :category_id,
+                deadline_date = :deadline_date,
+                edited_by = :edited_by,
+                edited_time = NOW()
             WHERE id = :id
         ");
-        return $stmt->execute($data);
+
+        return $stmt->execute([
+            'id' => $taskData['id'],
+            'title' => $taskData['title'],
+            'description' => $taskData['description'],
+            'priority_id' => $taskData['priority_id'],
+            'category_id' => $taskData['category_id'],
+            'deadline_date' => $taskData['deadline_date'],
+            'edited_by' => $taskData['edited_by']
+        ]);
     }
+
 
     public function deleteTask(int $id): bool
     {
@@ -125,14 +174,19 @@ class Task extends Model
 
     public function getAssignedTasks($userId): array
     {
+
         $query = $this->pdo->prepare("
-            SELECT t.id, t.title, p.name AS priority
+            SELECT t.*
             FROM tasks t
-            JOIN priorities p ON t.priority_id = p.id
-            JOIN user_task_assignments ut ON ut.task_id = t.id
-            WHERE ut.user_id = :user_id AND t.deleted = 0
+            INNER JOIN user_task_assignments ut ON 
+                        ut.task_id = t.id 
+                        AND ut.user_id = :user_id
+                        AND ut.deleted = 0
+    
         ");
+
         $query->execute(['user_id' => $userId]);
+
         return $query->fetchAll();
     }
 
@@ -176,6 +230,4 @@ class Task extends Model
             throw $e;
         }
     }
-
-
 }

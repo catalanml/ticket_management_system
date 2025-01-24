@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const noElementsMessage = document.getElementById('noCategoriesMessage');
     let currentCategoryId = null;
 
-    // Función para mostrar alertas estilizadas
+
     function showAlert(message, type = 'danger') {
         alertContainer.innerHTML = `
             <div class="alert alert-${type} alert-dismissible fade show" role="alert">
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 3000);
     }
 
-    // Crear categoría
+
     categoryForm.addEventListener('submit', function (e) {
         e.preventDefault();
 
@@ -77,16 +77,15 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     });
 
-    // Validar si el cuerpo de la tabla existe antes de agregar eventos
     if (categoryTableBody) {
-        // Manejar clic en editar categoría
+
         categoryTableBody.addEventListener('click', function (e) {
             if (e.target.classList.contains('editCategory')) {
                 const row = e.target.closest('tr');
                 currentCategoryId = row.getAttribute('data-id');
                 const currentName = row.querySelector('td:nth-child(2)').textContent;
 
-                // Crear modal de edición dinámicamente
+
                 const editModalHtml = `
                     <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
@@ -148,7 +147,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        // Manejar clic en eliminar categoría
+
         categoryTableBody.addEventListener('click', function (e) {
             if (e.target.classList.contains('deleteCategory')) {
                 const row = e.target.closest('tr');
@@ -192,7 +191,6 @@ document.addEventListener('DOMContentLoaded', function () {
                             if (data.status === 'success') {
                                 row.remove();
 
-                                // Si no hay filas después de eliminar, ocultar la tabla
                                 if (!categoryTableBody.querySelector('tr')) {
                                     categoryTable.style.display = 'none';
 

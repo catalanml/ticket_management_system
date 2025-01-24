@@ -1,12 +1,10 @@
-<?php
-ob_start();
-?>
-
+<?php ob_start(); ?>
+<script src="/js/tasks/manage_tasks.js" defer></script>
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-10">
+        <div class="col-md-12">
             <h2 class="text-dark text-center mb-4">Administración de Tareas</h2>
-
+            <div class="alert-container" id="alertContainer"></div>
             <?php if (!empty($tasks)): ?>
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover">
@@ -14,10 +12,11 @@ ob_start();
                             <tr>
                                 <th>ID</th>
                                 <th>Título</th>
-                                <th>Descripción</th>
                                 <th>Prioridad</th>
                                 <th>Categoría</th>
-                                <th>Asignar Usuario</th>
+                                <th>Estado</th>
+                                <th> Entrega </th>
+                                <th>Usuario asignado</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -26,7 +25,6 @@ ob_start();
                                 <tr data-id="<?= $task['id']; ?>">
                                     <td><?= $task['id']; ?></td>
                                     <td><?= htmlspecialchars($task['title']); ?></td>
-                                    <td><?= htmlspecialchars($task['description']); ?></td>
                                     <td class="text-center">
                                         <span class="badge bg-<?= $task['priority_type'] === 'high' ? 'danger' : ($task['priority_type'] === 'medium' ? 'warning' : 'success'); ?>">
                                             <?= htmlspecialchars(ucfirst($task['priority_name'])); ?>
@@ -35,17 +33,37 @@ ob_start();
                                     <td>
                                         <span class="badge bg-primary"><?= htmlspecialchars($task['category_name']); ?></span>
                                     </td>
-                                    <td>
-                                        <select class="form-select assignUserSelect">
-                                            <option value="">Seleccionar Usuario</option>
-                                            <?php foreach ($users as $user): ?>
-                                                <option value="<?= $user['id']; ?>" <?= $task['assigned_user_id'] === $user['id'] ? 'selected' : ''; ?>>
-                                                    <?= htmlspecialchars($user['firstname'] . ' ' . $user['lastname']); ?>
-                                                </option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                    </td>
                                     <td class="text-center">
+                                        <span class="badge bg-<?= $task['status'] === 'completed' ? 'success' : 'secondary'; ?>">
+                                            <?= $task['status'] === 'completed' ? 'Completada' : 'Pendiente'; ?>
+                                        </span>
+                                    </td>
+
+                                    <td class="text-center">
+                                        <span class="badge bg-<?= strtotime($task['deadline_date']) >= strtotime(date('Y-m-d')) ? 'success' : 'danger'; ?>">
+                                            <?= strtotime($task['deadline_date']) >= strtotime(date('Y-m-d')) ? 'Al día' : 'Atrasada'; ?>
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <?php if ($task['status'] === 'completed'): ?>
+                                            <?= htmlspecialchars($task['assigned_user_name'] ?? 'No asignado'); ?>
+                                        <?php else: ?>
+                                            <select class="form-select assignUserSelect">
+                                                <option value="">Seleccionar Usuario</option>
+                                                <?php foreach ($users as $user): ?>
+                                                    <option
+                                                        value="<?= $user['id']; ?>"
+                                                        <?= $task['assigned_user_id'] == $user['id'] ? 'selected' : ''; ?>>
+                                                        <?= htmlspecialchars($user['firstname'] . ' ' . $user['lastname']); ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        <?php endif; ?>
+                                    </td>
+
+                                    <td class="text-center">
+                                        <a href="/tasks/detail?id=<?= $task['id']; ?>" class="btn btn-info btn-sm">Ver Detalle</a>
                                         <a href="/tasks/edit?id=<?= $task['id']; ?>" class="btn btn-warning btn-sm">Editar</a>
                                         <button class="btn btn-danger btn-sm deleteTask">Eliminar</button>
                                     </td>
@@ -81,7 +99,6 @@ ob_start();
     </div>
 </div>
 
-<script src="/assets/js/tasks/manage_tasks.js" defer></script>
 
 <?php $content = ob_get_clean(); ?>
 <?php include VIEW_PATH . 'layout.php'; ?>
