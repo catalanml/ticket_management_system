@@ -86,8 +86,6 @@ project-root/
 |   |— Models/          # Modelos de base de datos
 |   |— Views/           # Vistas del sistema
 |   |— Core/            # Router y utilidades básicas
-|— sql/
-|   |— schema.sql       # Esquema de la base de datos
 |— .env                 # Configuración del entorno
 |— README.md            # Documentación del proyecto
 ```
