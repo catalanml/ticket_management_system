@@ -5,6 +5,8 @@ namespace App\Models;
 
 use App\Core\Model;
 use App\Models\User;
+use App\Models\Priority;
+use App\Models\Category;
 
 class Task extends Model
 {
@@ -16,6 +18,27 @@ class Task extends Model
             WHERE t.deleted = 0
         ");
         return $stmt->fetchAll();
+    }
+
+    public function addTaskDetails($tasks)
+    {
+
+        $priorityModel = new Priority();
+        $categoryModel = new Category();
+
+        foreach ($tasks as $key => $task) {
+
+            $priority = $priorityModel->getPriorityById($task['priority_id']);
+            $tasks[$key]['priority_name'] = $priority['name'];
+            $tasks[$key]['priority_type'] = $priority['type'];
+
+            $tasks[$key]['status'] = $this->isTaskCompleted($task['id']) ? 'completed' : 'pending';
+
+            $category = $categoryModel->getCategoryById($task['category_id']);
+            $tasks[$key]['category_name'] = $category['name'];
+        }
+
+        return $tasks;
     }
 
     public function getLastInsertedId(): int
@@ -48,7 +71,7 @@ class Task extends Model
 
         return $response;
     }
-    
+
     public function getTaskById(int $id): array|false
     {
         $stmt = $this->pdo->prepare("
@@ -57,7 +80,7 @@ class Task extends Model
             WHERE t.id = :id
         ");
         $stmt->execute(['id' => $id]);
-        return $stmt->fetch(); 
+        return $stmt->fetch();
     }
 
     public function isTaskCompleted(): bool
@@ -112,4 +135,47 @@ class Task extends Model
         $query->execute(['user_id' => $userId]);
         return $query->fetchAll();
     }
+
+    public function assignUserToTask(int $taskId, int $userId, int $createdBy)
+    {
+        $this->pdo->beginTransaction();
+
+        try {
+
+            $stmt = $this->pdo->prepare("
+            SELECT COUNT(*) 
+            FROM user_task_assignments
+            WHERE task_id = :task_id AND deleted = 0
+        ");
+            $stmt->execute(['task_id' => $taskId]);
+            $existingAssignmentCount = $stmt->fetchColumn();
+
+
+            if ($existingAssignmentCount > 0) {
+                $stmt = $this->pdo->prepare("
+                UPDATE user_task_assignments
+                SET deleted = 1, edited_time = NOW()
+                WHERE task_id = :task_id AND deleted = 0
+            ");
+                $stmt->execute(['task_id' => $taskId]);
+            }
+
+            $stmt = $this->pdo->prepare("
+            INSERT INTO user_task_assignments (user_id, task_id, created_by)
+            VALUES (:user_id, :task_id, :created_by)
+        ");
+            $stmt->execute([
+                'user_id' => $userId,
+                'task_id' => $taskId,
+                'created_by' => $createdBy,
+            ]);
+
+            $this->pdo->commit();
+        } catch (\Exception $e) {
+            $this->pdo->rollBack();
+            throw $e;
+        }
+    }
+
+
 }

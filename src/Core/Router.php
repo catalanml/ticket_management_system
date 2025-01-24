@@ -47,6 +47,8 @@ class Router
             ['method' => 'GET', 'path' => '/tasks/detail', 'controller' => [TaskController::class, 'detail']],
             ['method' => 'POST', 'path' => '/tasks/assign', 'controller' => [TaskController::class, 'assign']],
             ['method' => 'POST', 'path' => '/tasks/complete', 'controller' => [TaskController::class, 'complete']],
+            ['method' => 'GET', 'path' => '/tasks/manageTasks', 'controller' => [TaskController::class, 'manageTasks']], 
+            ['method' => 'GET', 'path' => '/tasks/getAssignedUsers', 'controller' => [TaskController::class, 'getAssignedUsers']],
 
         ];
     }

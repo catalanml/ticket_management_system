@@ -27,4 +27,14 @@ class User extends Model
         return $stmt->fetch();
     }
 
+    public function getAllUsers(): array
+    {
+        $stmt = $this->pdo->prepare("
+            SELECT id, firstname, lastname 
+            FROM users
+            WHERE deleted = 0
+        ");
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
 }

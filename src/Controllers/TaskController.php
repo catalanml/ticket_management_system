@@ -5,18 +5,21 @@ namespace App\Controllers;
 use App\Models\Task;
 use App\Models\Category;
 use App\Models\Priority;
+use App\Models\User;
 
 class TaskController
 {
     private Task $taskModel;
     private Category $categoryModel;
     private Priority $priorityModel;
+    private User $userModel;
 
     public function __construct()
     {
         $this->taskModel = new Task();
         $this->categoryModel = new Category();
         $this->priorityModel = new Priority();
+        $this->userModel = new User();
     }
 
     /**
@@ -187,9 +190,7 @@ class TaskController
             return;
         }
 
-      
         $task = $this->taskModel->getTaskById($taskId);
-
 
         if (!$task) {
             http_response_code(404);
@@ -209,5 +210,59 @@ class TaskController
         $userId = $_SESSION['user_id'];
 
         require __DIR__ . '/../Views/tasks/detail.php';
+    }
+
+    public function assign()
+    {
+        session_start();
+
+        if (!isset($_SESSION['user_id'])) {
+            header("Content-Type: application/json");
+            echo json_encode(['status' => 'error', 'message' => 'Usuario no autenticado.']);
+            exit;
+        }
+
+        $createdBy = $_SESSION['user_id'];
+        $input = json_decode(file_get_contents('php://input'), true);
+
+        $taskId = $input['task_id'] ?? null;
+        $userId = $input['user_id'] ?? null;
+
+        if (!$taskId || !$userId) {
+            header("Content-Type: application/json");
+            echo json_encode(['status' => 'error', 'message' => 'Tarea y usuario son obligatorios.']);
+            exit;
+        }
+
+        try {
+            $this->taskModel->assignUserToTask($taskId, $userId, $createdBy);
+            header("Content-Type: application/json");
+            echo json_encode(['status' => 'success', 'message' => 'Usuario asignado correctamente.']);
+        } catch (\Exception $e) {
+            header("Content-Type: application/json");
+            echo json_encode(['status' => 'error', 'message' => 'No se pudo asignar el usuario. Detalles: ' . $e->getMessage()]);
+        }
+    }
+
+    public function manageTasks()
+    {
+        session_start();
+
+        if (!isset($_SESSION['user_id'])) {
+            header("Location: /login");
+            exit;
+        }
+
+        $tasks = $this->taskModel->getAllTasks();
+        $tasks = $this->taskModel->addTaskDetails($tasks);
+
+        $users = $this->userModel->getAllUsers();
+
+        foreach ($tasks as &$task) {
+            $assignedUser = $this->taskModel->getAssignedUsertoTask($task['id']);
+            $task['assigned_user_id'] = $assignedUser['user_id'] ?? null;
+        }
+
+        require __DIR__ . '/../Views/tasks/manage_tasks.php';
     }
 }

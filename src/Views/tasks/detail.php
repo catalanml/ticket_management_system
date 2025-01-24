@@ -24,8 +24,7 @@
                                     </span></p>
                             </div>
                         </div>
-
-                        <!-- Fecha de entrega -->
+     
                         <div class="mb-3">
                             <label for="deadlineDate" class="form-label">Fecha de entrega</label>
                             <p id="deadlineDate" class="text-muted">
@@ -33,13 +32,11 @@
                             </p>
                         </div>
 
-                        <!-- Descripción -->
                         <div class="mb-3">
                             <label for="taskDescription" class="form-label">Descripción</label>
                             <p id="taskDescription" class="text-justify text-muted"><?= htmlspecialchars($task['description']); ?></p>
                         </div>
-
-                        <!-- Observación -->
+      
                         <div class="mb-3">
                             <label for="taskObservation" class="form-label">Observaciones</label>
                             <?php if ($task['assigned_user_id'] === $_SESSION['user_id']): ?>
@@ -50,8 +47,6 @@
                         </div>
 
 
-
-                        <!-- Botón de completar tarea (solo para usuario asignado) -->
                         <?php if ($task['assigned_user_id'] === $_SESSION['user_id']): ?>
                             <div class="text-center mt-4">
                                 <button type="button" id="completeTaskButton" class="btn btn-success">
