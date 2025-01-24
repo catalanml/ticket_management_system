@@ -42,10 +42,17 @@ class PriorityController
         $input = $this->getJsonInput();
 
         $name = $input['name'] ?? '';
+        $type = $input['prioritytype'] ?? '';
         $createdBy = (int)($_SESSION['user_id'] ?? 0);
 
         if (empty($name)) {
-            $this->sendJsonResponse(['status' => 'error', 'message' => 'El nombre de la Prioridad es obligatorio.']);
+            $this->sendJsonResponse(['status' => 'error', 'message' => 'El nombre de la prioridad es obligatorio.']);
+            return;
+        }
+
+
+        if (empty($type)) {
+            $this->sendJsonResponse(['status' => 'error', 'message' => 'El tipo de la prioridad es obligatorio.']);
             return;
         }
 
@@ -55,7 +62,7 @@ class PriorityController
         }
 
         try {
-            $this->PriorityModel->createPriority($name, $createdBy);
+            $this->PriorityModel->createPriority($name, $type, $createdBy);
             $lastId = $this->PriorityModel->getLastInsertedId();
             $this->sendJsonResponse([
                 'status' => 'success',
@@ -87,15 +94,12 @@ class PriorityController
         $input = $this->getJsonInput();
         $id = (int)($input['id'] ?? 0);
         $name = $input['name'] ?? '';
+        $type = $input['prioritytype'] ?? '';
         $editedBy = (int)($_SESSION['user_id'] ?? 0);
 
-        if ($id === 0 || empty($name)) {
-            $this->sendJsonResponse(['status' => 'error', 'message' => 'El ID y el nombre de la prioridad son obligatorios.']);
-            return;
-        }
 
         try {
-            $this->PriorityModel->updatePriority($id, $name, $editedBy);
+            $this->PriorityModel->updatePriority($id, $name, $type,  $editedBy);
             $this->sendJsonResponse([
                 'status' => 'success',
                 'message' => 'Prioridad actualizada con éxito.'

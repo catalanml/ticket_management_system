@@ -1,53 +1,58 @@
 <?php ob_start(); ?>
-<h2 class="text-dark">Bienvenido, <?= htmlspecialchars($user['firstname'] ?? 'Usuario'); ?></h2>
-<?php if (isset($assignedUserId)): ?>
-    <p class="text-muted">Aquí tienes tus tareas asignadas:</p>
-<?php else: ?>
-    <p class="text-muted">Esta es la lista de todas las tareas:</p>
-<?php endif; ?>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <h2 class="text-dark text-center mb-4">Bienvenido, <?= htmlspecialchars($user['firstname'] ?? 'Usuario'); ?></h2>
+            <?php if (isset($assignedUserId)): ?>
+                <p class="text-muted text-center">Aquí tienes tus tareas asignadas:</p>
+            <?php else: ?>
+                <p class="text-muted text-center">Esta es la lista de todas las tareas:</p>
+            <?php endif; ?>
 
-<?php if (!empty($tasks)): ?>
-    <table class="table table-bordered table-hover mt-4">
-        <thead class="table-dark text-center">
-        <tr>
-            <th>Título</th>
-            <th>Descripción</th>
-            <th>Prioridad</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-        </tr>
-        </thead>
-        <tbody>
-        <?php foreach ($tasks as $task): ?>
-            <tr>
-                <td><?= htmlspecialchars($task['title']); ?></td>
-                <td><?= htmlspecialchars(substr($task['description'], 0, 50)) . (strlen($task['description']) > 50 ? '...' : ''); ?></td>
-                <td class="text-center">
-                        <span class="badge bg-<?= $task['priority'] === 'high' ? 'danger' : ($task['priority'] === 'medium' ? 'warning' : 'success'); ?>">
-                            <?= htmlspecialchars(ucfirst($task['priority'])); ?>
-                        </span>
-                </td>
-                <td class="text-center">
-                        <span class="badge bg-<?= $task['status'] === 'completed' ? 'success' : 'secondary'; ?>">
-                            <?= $task['status'] === 'completed' ? 'Completada' : 'Pendiente'; ?>
-                        </span>
-                </td>
-                <td class="text-center">
-                    <a href="/tasks/detail?id=<?= $task['id']; ?>" class="btn btn-info btn-sm">Ver Detalle</a>
-                </td>
-            </tr>
-        <?php endforeach; ?>
-        </tbody>
-    </table>
-<?php else: ?>
-    <div class="alert alert-info mt-4">
-        <?php if (isset($assignedUserId)): ?>
-            No tienes tareas asignadas. <a href="/tasks/create" class="alert-link">Crear una nueva tarea</a>.
-        <?php else: ?>
-            No hay tareas registradas. <a href="/tasks/create" class="alert-link">Crear una nueva tarea</a>.
-        <?php endif; ?>
+            <?php if (!empty($tasks)): ?>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover mt-4">
+                        <thead class="table-dark text-center">
+                        <tr>
+                            <th>Título</th>
+                            <th>Prioridad</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach ($tasks as $task): ?>
+                            <tr>
+                                <td><?= htmlspecialchars($task['title']); ?></td>
+                                <td class="text-center">
+                                    <span class="badge bg-<?= $task['priority'] === 'high' ? 'danger' : ($task['priority'] === 'medium' ? 'warning' : 'success'); ?>">
+                                        <?= htmlspecialchars(ucfirst($task['priority'])); ?>
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-<?= $task['status'] === 'completed' ? 'success' : 'secondary'; ?>">
+                                        <?= $task['status'] === 'completed' ? 'Completada' : 'Pendiente'; ?>
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <a href="/tasks/detail?id=<?= $task['id']; ?>" class="btn btn-info btn-sm">Ver Detalle</a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php else: ?>
+                <div class="alert alert-info mt-4 text-center">
+                    <?php if (isset($assignedUserId)): ?>
+                        No tienes tareas asignadas.
+                    <?php else: ?>
+                        No hay tareas registradas. <a href="/tasks/create" class="alert-link">Crear una nueva tarea</a>.
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
+        </div>
     </div>
-<?php endif; ?>
-
+</div>
 <?php $content = ob_get_clean(); ?>
 <?php include VIEW_PATH . 'layout.php'; ?>

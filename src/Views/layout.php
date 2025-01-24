@@ -31,7 +31,7 @@
                                     <li class="nav-item">
                                         <a class="nav-link text-white" href="/dashboard?assignedUserId=<?php echo $_SESSION['user_id']; ?>">Mis tareas asignadas</a>
                                     </li>
-                                    <li class="nav-item"><a class="nav-link text-white" href="/tasks/assign">Asignar tareas</a></li>
+                                    <li class="nav-item"><a class="nav-link text-white" href="/tasks/manage">Administrar tareas</a></li>
                                 </ul>
                             </div>
                         </div>

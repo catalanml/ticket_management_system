@@ -15,18 +15,25 @@ class Priority extends Model
     public function getLastInsertedId(): int
     {
         return (int) $this->pdo->lastInsertId();
+    }  
+
+    public function getPriorityById(int $id): array
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM priorities WHERE id = :id");
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetch();
     }
 
-    public function createPriority(string $name, int $createdBy): bool
+    public function createPriority(string $name, string $type, int $createdBy): bool
     {
-        $stmt = $this->pdo->prepare("INSERT INTO priorities (name, created_by) VALUES (:name, :created_by)");
-        return $stmt->execute(['name' => $name, 'created_by' => $createdBy]);
+        $stmt = $this->pdo->prepare("INSERT INTO priorities (name, type, created_by) VALUES (:name, :type, :created_by)");
+        return $stmt->execute(['name' => $name, 'type' => $type, 'created_by' => $createdBy]);
     }
 
-    public function updatePriority(int $id, string $name, int $editedBy): bool
+    public function updatePriority(int $id, string $name, string $type, int $editedBy): bool
     {
-        $stmt = $this->pdo->prepare("UPDATE priorities SET name = :name, edited_by = :edited_by WHERE id = :id");
-        return $stmt->execute(['name' => $name, 'edited_by' => $editedBy, 'id' => $id]);
+        $stmt = $this->pdo->prepare("UPDATE priorities SET name = :name, type = :type, edited_by = :edited_by WHERE id = :id");
+        return $stmt->execute(['name' => $name,  'type' => $type,  'edited_by' => $editedBy, 'id' => $id]);
     }
 
     public function deletePriority(int $id): bool

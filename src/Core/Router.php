@@ -44,16 +44,20 @@ class Router
             ['method' => 'POST', 'path' => '/tasks/create', 'controller' => [TaskController::class, 'create']],
             ['method' => 'POST', 'path' => '/tasks/edit', 'controller' => [TaskController::class, 'edit']],
             ['method' => 'POST', 'path' => '/tasks/delete', 'controller' => [TaskController::class, 'delete']],
+            ['method' => 'GET', 'path' => '/tasks/detail', 'controller' => [TaskController::class, 'detail']],
+            ['method' => 'POST', 'path' => '/tasks/assign', 'controller' => [TaskController::class, 'assign']],
+            ['method' => 'POST', 'path' => '/tasks/complete', 'controller' => [TaskController::class, 'complete']],
+
         ];
     }
 
     public function handleRequest()
     {
-        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH); // Obtiene solo el path de la URI
+        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $method = $_SERVER['REQUEST_METHOD'];
         $queryString = $_SERVER['QUERY_STRING'] ?? '';
 
-        // Manejar /dashboard con parámetro assignedUserId
+
         if ($uri === '/dashboard' && $method === 'GET') {
             parse_str($queryString, $queryParams);
             if (isset($queryParams['assignedUserId'])) {
@@ -63,7 +67,6 @@ class Router
             }
         }
 
-        // Verificar si la ruta coincide con las definidas
         foreach ($this->routes as $route) {
             if ($route['path'] === $uri && $route['method'] === $method) {
                 [$controllerClass, $method] = $route['controller'];
@@ -73,7 +76,6 @@ class Router
             }
         }
 
-        // Si no se encuentra la ruta
         http_response_code(404);
         echo "404 - Not Found";
     }

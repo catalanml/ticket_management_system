@@ -14,6 +14,14 @@ ob_start();
             <form id="priorityForm" class="mb-4">
                 <div class="input-group">
                     <input type="text" id="priorityName" class="form-control" placeholder="Nombre de la Prioridad" required>
+
+                    <select id="priorityType" class="form-select" required>
+                        <option value="">Tipo de Prioridad</option>
+                        <option value="high">Alta</option>
+                        <option value="medium">Media</option>
+                        <option value="low">Baja</option>
+                    </select>
+                    
                     <button type="submit" class="btn btn-primary">Guardar</button>
                 </div>
             </form>
@@ -23,6 +31,7 @@ ob_start();
                 <tr class="text-center">
                     <th>ID</th>
                     <th>Nombre</th>
+                    <th>Tipo de Prioridad</th>
                     <th>Acciones</th>
                 </tr>
                 </thead>
@@ -32,6 +41,12 @@ ob_start();
                         <tr data-id="<?= $priority['id']; ?>">
                             <td class="text-center"><?= $priority['id']; ?></td>
                             <td><?= htmlspecialchars($priority['name']); ?></td>
+                          
+                            <td class="text-center">
+                                <span class="badge bg-<?= $priority['type'] === 'high' ? 'danger' : ($priority['type'] === 'medium' ? 'warning' : 'success'); ?>">
+                                    <?= htmlspecialchars(ucfirst( $priority['type'] === 'high' ? 'alta' : ($priority['type'] === 'medium' ? 'media' : 'baja')  )); ?>
+                                </span>
+                            </td>
                             <td class="text-center">
                                 <button class="btn btn-warning btn-sm editpriority">Editar</button>
                                 <button class="btn btn-danger btn-sm deletepriority">Eliminar</button>

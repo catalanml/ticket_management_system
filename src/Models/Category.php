@@ -12,6 +12,13 @@ class Category extends Model
         return $query->fetchAll();
     }
 
+    public function getCategoryById(int $id): array
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM categories WHERE id = :id");
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetch();
+    }
+
     public function getLastInsertedId(): int
     {
         return (int) $this->pdo->lastInsertId();

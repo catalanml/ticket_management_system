@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Models;namespace App\Models;
+namespace App\Models;
+
 
 use App\Core\Model;
+use App\Models\User;
 
 class Task extends Model
 {
@@ -21,7 +23,36 @@ class Task extends Model
 
     public function getLastInsertedId(): int
     {
-        return (int) $this->pdo->lastInsertId();
+        return (int)$this->pdo->lastInsertId();
+    }
+
+    public function getAssignedUsertoTask(int $taskId): ?array
+    {
+
+        $response = [];
+
+        //fetch the user assigned to the task (1 user per task)
+
+        $stmt = $this->pdo->prepare("
+                        SELECT user_id 
+                        FROM user_task_assignments 
+                        WHERE task_id = :task_id 
+                        and deleted = 0");
+        $stmt->execute(['task_id' => $taskId]);
+
+        $userId = $stmt->fetch();
+
+        //if the task is not assigned to any user, return an empty array
+        if (!$userId) {
+            return [];
+        }
+
+        //fetch the user details via model
+        $userModel = new User();
+        $response['assigned_user'] = $userModel->getUserById($userId['user_id']);
+
+
+        return $response;
     }
 
     public function getTaskById(int $id): array
@@ -33,6 +64,19 @@ class Task extends Model
         ");
         $stmt->execute(['id' => $id]);
         return $stmt->fetch();
+    }
+
+    public function isTaskCompleted(): bool
+    {
+        $stmt = $this->pdo->prepare("
+            SELECT t.id 
+            FROM tasks t 
+            JOIN user_task_assignments uta ON t.id = uta.task_id and uta.completed = 1
+           ");
+        $stmt->execute();
+
+        $record = $stmt->fetch();
+        return $record ? true : false;
     }
 
     public function getTaskDetailById(int $id): array

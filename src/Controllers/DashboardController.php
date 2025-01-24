@@ -28,6 +28,10 @@ class DashboardController
 
         $tasks = $this->taskModel->getAllTasks();
 
+        foreach ($tasks as $key => $task) {
+            $tasks[$key]['status'] = $this->taskModel->isTaskCompleted($task['id']) ? 'completed' : 'pending';
+        }
+
         $user = $_SESSION['user'] ?? ['firstname' => 'Usuario', 'lastname' => ''];
         require __DIR__ . '/../Views/dashboard.php';
     }
@@ -38,7 +42,11 @@ class DashboardController
 
         $tasks = $this->taskModel->getAssignedTasks($assignedUserId);
 
-        // Datos del usuario logueado
+        
+        foreach ($tasks as $key => $task) {
+            $tasks[$key]['status'] = $this->taskModel->isTaskCompleted($task['id']) ? 'completed' : 'pending';
+        }
+
         $user = $_SESSION['user'] ?? ['firstname' => 'Usuario', 'lastname' => ''];
         require __DIR__ . '/../Views/dashboard.php'; // Cambia a la vista que prefieras
     }

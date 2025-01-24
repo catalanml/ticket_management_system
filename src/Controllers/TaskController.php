@@ -168,4 +168,41 @@ class TaskController
             echo json_encode(['status' => 'error', 'message' => 'No se pudo eliminar la tarea. Detalles: ' . $e->getMessage()]);
         }
     }
+
+    public function detail()
+    {
+        session_start();
+
+        if (!isset($_SESSION['user_id'])) {
+            header("Location: /login");
+            exit;
+        }
+
+        // Obtener el ID de la tarea desde los parámetros de la URL
+        $taskId = $_GET['id'] ?? null;
+
+        if (!$taskId) {
+            http_response_code(400);
+            echo "El ID de la tarea es obligatorio.";
+            return;
+        }
+
+        // Consultar los datos de la tarea
+        $task = $this->taskModel->getTaskById($taskId);
+
+        if (!$task) {
+            http_response_code(404);
+            echo "Tarea no encontrada.";
+            return;
+        }
+
+        $task['status'] = $this->taskModel->isTaskCompleted($task['id']) ? 'completed' : 'pending';
+        $task['priority_name'] = $this->priorityModel->getPriorityById($task['priority_id'])['name'];
+        $task['category_name'] = $this->categoryModel->getCategoryById($task['category_id'])['name'];
+        $task['assigned_user_id'] = $this->taskModel->getAssignedUsertoTask($task['id'])['id'];
+
+        $userId = $_SESSION['user_id'];
+
+        require __DIR__ . '/../Views/tasks/detail.php';
+    }
 }
