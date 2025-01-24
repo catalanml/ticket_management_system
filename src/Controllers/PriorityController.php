@@ -14,9 +14,7 @@ class PriorityController
         $this->PriorityModel = new Priority();
     }
 
-    /**
-     * Mostrar la vista principal de prioridades.
-     */
+
     public function index()
     {
         session_start();
@@ -31,9 +29,6 @@ class PriorityController
         require __DIR__ . '/../Views/priorities/priorities.php';
     }
 
-    /**
-     * Crear una nueva Prioridad.
-     */
     public function create()
     {
         session_start();
@@ -83,9 +78,7 @@ class PriorityController
         }
     }
 
-    /**
-     * Editar una prioridad existente.
-     */
+
     public function edit()
     {
         session_start();
@@ -112,9 +105,7 @@ class PriorityController
         }
     }
 
-    /**
-     * Eliminar una Prioridad.
-     */
+
     public function delete()
     {
         session_start();
@@ -147,29 +138,19 @@ class PriorityController
         }
     }
 
-    /**
-     * Configurar las cabeceras para JSON.
-     */
+
     private function sendJsonHeaders()
     {
         header('Content-Type: application/json');
     }
 
-    /**
-     * Obtener los datos JSON del cuerpo de la solicitud.
-     *
-     * @return array
-     */
+
     private function getJsonInput(): array
     {
         return json_decode(file_get_contents('php://input'), true) ?? [];
     }
 
-    /**
-     * Enviar una respuesta JSON al cliente.
-     *
-     * @param array $response
-     */
+
     private function sendJsonResponse(array $response)
     {
         echo json_encode($response);

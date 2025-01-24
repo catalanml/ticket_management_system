@@ -16,9 +16,7 @@ class DashboardController
     }
 
 
-    /**
-     * Mostrar todas las tareas asignadas al usuario.
-     */
+
     public function show()
     {
         session_start();

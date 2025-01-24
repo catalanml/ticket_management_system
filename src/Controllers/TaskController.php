@@ -23,9 +23,7 @@ class TaskController
         $this->userModel = new User();
     }
 
-    /**
-     * Mostrar la vista principal de tareas.
-     */
+
     public function index()
     {
         session_start();
@@ -56,9 +54,7 @@ class TaskController
         require __DIR__ . '/../Views/tasks/create_task.php';
     }
 
-    /**
-     * Crear una nueva tarea.
-     */
+
     public function create()
     {
         session_start();
@@ -183,10 +179,6 @@ class TaskController
         }
     }
 
-
-    /**
-     * Eliminar una tarea.
-     */
     public function delete()
     {
         session_start();

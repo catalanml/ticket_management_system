@@ -13,9 +13,7 @@ class CategoryController
         $this->categoryModel = new Category();
     }
 
-    /**
-     * Mostrar la vista principal de categorías.
-     */
+
     public function index()
     {
         session_start();
@@ -30,9 +28,7 @@ class CategoryController
         require __DIR__ . '/../Views/categories/categories.php';
     }
 
-    /**
-     * Crear una nueva categoría.
-     */
+
     public function create()
     {
         session_start();
@@ -75,9 +71,7 @@ class CategoryController
         }
     }
 
-    /**
-     * Editar una categoría existente.
-     */
+ 
     public function edit()
     {
         session_start();
@@ -107,9 +101,6 @@ class CategoryController
         }
     }
 
-    /**
-     * Eliminar una categoría.
-     */
     public function delete()
     {
         session_start();
@@ -142,29 +133,19 @@ class CategoryController
         }
     }
 
-    /**
-     * Configurar las cabeceras para JSON.
-     */
+
     private function sendJsonHeaders()
     {
         header('Content-Type: application/json');
     }
 
-    /**
-     * Obtener los datos JSON del cuerpo de la solicitud.
-     *
-     * @return array
-     */
+
     private function getJsonInput(): array
     {
         return json_decode(file_get_contents('php://input'), true) ?? [];
     }
 
-    /**
-     * Enviar una respuesta JSON al cliente.
-     *
-     * @param array $response
-     */
+
     private function sendJsonResponse(array $response)
     {
         echo json_encode($response);
